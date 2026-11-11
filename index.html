@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveMate</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar navigation -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>
+      <span>SaveMate</span>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span></button>
+      <button class="nav-btn" data-view="income">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        <span>Income</span></button>
+      <button class="nav-btn" data-view="expenses">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        <span>Expenses</span></button>
+      <button class="nav-btn" data-view="savings">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg>
+        <span>Savings</span></button>
+      <button class="nav-btn" data-view="pots">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+        <span>Pots</span></button>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <h1>Dashboard</h1>
+      <div class="stats">
+        <div class="card stat"><span class="label">Total Income</span><strong id="stat-income">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Total Expenses</span><strong id="stat-expenses">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Total General Savings</span><strong id="stat-savings">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Allocated to Pots</span><strong id="stat-allocated">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Unallocated Savings</span><strong id="stat-unallocated">RM 0.00</strong></div>
+        <div class="card stat main"><span class="label">Available Balance</span><strong id="stat-available">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Potential Savings (Income − Expenses)</span><strong id="stat-potential">RM 0.00</strong></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h2>Monthly overview</h2><input type="month" id="month-select" aria-label="Month"></div>
+          <div class="bar-row"><span>Income</span><div class="bar"><i id="bar-income" class="good"></i></div><b id="month-income">RM 0.00</b></div>
+          <div class="bar-row"><span>Expenses</span><div class="bar"><i id="bar-expenses" class="bad"></i></div><b id="month-expenses">RM 0.00</b></div>
+          <p class="month-line">Income − Expenses: <b id="month-net">RM 0.00</b></p>
+          <p class="month-line">Saved this month: <b id="month-deposits">RM 0.00</b> &nbsp; Withdrawn: <b id="month-withdrawals">RM 0.00</b></p>
+        </div>
+
+        <div class="card">
+          <h2>Opening balances</h2>
+          <form id="settings-form" novalidate>
+            <label>Opening Balance (RM)<input type="number" id="opening-balance" step="0.01" min="0" value="0"></label>
+            <label>Opening Savings Balance (RM)<input type="number" id="opening-savings" step="0.01" min="0" value="0"></label>
+            <p class="form-error" id="settings-error"></p>
+            <button type="submit" class="btn">Save balances</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Savings goals overview</h2>
+        <div id="goals-overview"></div>
+      </div>
+
+      <div class="card">
+        <h2>Recent transactions</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Type</th><th class="num">Amount</th></tr></thead>
+          <tbody id="recent-body"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- INCOME -->
+    <section id="view-income" class="view">
+      <h1>Income</h1>
+      <div class="card">
+        <h2 id="income-form-title">Add income</h2>
+        <form id="income-form" novalidate>
+          <input type="hidden" id="income-id">
+          <div class="grid">
+            <label>Date<input type="date" id="income-date"></label>
+            <label>Description<input type="text" id="income-description" maxlength="80"></label>
+            <label>Category<select id="income-category"></select></label>
+            <label>Amount (RM)<input type="number" id="income-amount" step="0.01" min="0.01"></label>
+          </div>
+          <label>Notes (optional)<textarea id="income-notes" rows="2" maxlength="200"></textarea></label>
+          <p class="form-error" id="income-error"></p>
+          <button type="submit" class="btn" id="income-submit">Add income</button>
+          <button type="button" class="btn ghost" id="income-cancel" hidden>Cancel edit</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Income history <small id="income-total"></small></h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Notes</th><th class="num">Amount</th><th></th></tr></thead>
+          <tbody id="income-body"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- EXPENSES -->
+    <section id="view-expenses" class="view">
+      <h1>Expenses</h1>
+      <div class="card">
+        <h2 id="expense-form-title">Add expense</h2>
+        <form id="expense-form" novalidate>
+          <input type="hidden" id="expense-id">
+          <div class="grid">
+            <label>Date<input type="date" id="expense-date"></label>
+            <label>Description<input type="text" id="expense-description" maxlength="80"></label>
+            <label>Category<select id="expense-category"></select></label>
+            <label>Payment method<select id="expense-method"></select></label>
+            <label>Amount (RM)<input type="number" id="expense-amount" step="0.01" min="0.01"></label>
+          </div>
+          <label>Notes (optional)<textarea id="expense-notes" rows="2" maxlength="200"></textarea></label>
+          <p class="form-error" id="expense-error"></p>
+          <button type="submit" class="btn" id="expense-submit">Add expense</button>
+          <button type="button" class="btn ghost" id="expense-cancel" hidden>Cancel edit</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Expense history <small id="expense-total"></small></h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Payment</th><th>Notes</th><th class="num">Amount</th><th></th></tr></thead>
+          <tbody id="expense-body"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- SAVINGS -->
+    <section id="view-savings" class="view">
+      <h1>Savings</h1>
+      <div class="card stat main"><span class="label">Current Savings Balance</span><strong id="savings-balance">RM 0.00</strong><span class="label" id="savings-split"></span></div>
+      <div class="card">
+        <h2 id="savings-form-title">Add savings record</h2>
+        <form id="savings-form" novalidate>
+          <input type="hidden" id="savings-id">
+          <div class="grid">
+            <label>Date<input type="date" id="savings-date"></label>
+            <label>Description<input type="text" id="savings-description" maxlength="80"></label>
+            <label>Type<select id="savings-type"><option value="Deposit">Deposit</option><option value="Withdrawal">Withdrawal</option></select></label>
+            <label>Amount (RM)<input type="number" id="savings-amount" step="0.01" min="0.01"></label>
+          </div>
+          <p class="form-error" id="savings-error"></p>
+          <button type="submit" class="btn" id="savings-submit">Add record</button>
+          <button type="button" class="btn ghost" id="savings-cancel" hidden>Cancel edit</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Savings history</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Type</th><th class="num">Amount</th><th></th></tr></thead>
+          <tbody id="savings-body"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- SAVINGS POTS -->
+    <section id="view-pots" class="view">
+      <h1>Savings Pots</h1>
+      <div class="stats">
+        <div class="card stat main"><span class="label">Total General Savings</span><strong id="pots-total">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Allocated to Pots</span><strong id="pots-allocated">RM 0.00</strong></div>
+        <div class="card stat"><span class="label">Unallocated Savings</span><strong id="pots-unallocated">RM 0.00</strong></div>
+      </div>
+
+      <div id="pots-list" class="pots-grid"></div>
+
+      <div class="two-col">
+        <div class="card" id="pot-money-card">
+          <h2>Add or withdraw money</h2>
+          <form id="pot-money-form" novalidate>
+            <div class="grid">
+              <label>Savings pot<select id="pot-money-pot"></select></label>
+              <label>Type<select id="pot-money-type"><option value="Add Money">Add Money</option><option value="Withdraw Money">Withdraw Money</option></select></label>
+              <label>Date<input type="date" id="pot-money-date"></label>
+              <label>Amount (RM)<input type="number" id="pot-money-amount" step="0.01" min="0.01"></label>
+            </div>
+            <label>Description (optional)<input type="text" id="pot-money-description" maxlength="80"></label>
+            <p class="form-error" id="pot-money-error"></p>
+            <button type="submit" class="btn">Save transaction</button>
+          </form>
+        </div>
+
+        <div class="card" id="pot-form-card">
+          <h2 id="pot-form-title">Create a savings pot</h2>
+          <form id="pot-form" novalidate>
+            <input type="hidden" id="pot-id">
+            <div class="grid">
+              <label>Goal name<input type="text" id="pot-name" maxlength="40" placeholder="Tablet Fund"></label>
+              <label>Icon<select id="pot-icon"></select></label>
+              <label>Target amount (RM)<input type="number" id="pot-target" step="0.01" min="0.01"></label>
+              <label>Starting balance (RM)<input type="number" id="pot-initial" step="0.01" min="0" value="0"></label>
+              <label>Target date<input type="date" id="pot-date"></label>
+            </div>
+            <label>Description (optional)<textarea id="pot-description" rows="2" maxlength="200"></textarea></label>
+            <p class="form-error" id="pot-error"></p>
+            <button type="submit" class="btn" id="pot-submit">Create pot</button>
+            <button type="button" class="btn ghost" id="pot-cancel" hidden>Cancel edit</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Order matters: helpers first, app.js last -->
+<script src="js/storage.js"></script>
+<script src="js/income.js"></script>
+<script src="js/expenses.js"></script>
+<script src="js/savings.js"></script>
+<script src="js/pots.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
